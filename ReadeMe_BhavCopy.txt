@@ -1,0 +1,61 @@
+﻿BhavCopy
+--------
+
+Table: tab_bse_stock_price
+
+Columns:
+	isin 				varchar(30) 	PK 
+	stock_date 			date 		PK 
+	open 				float 		UN 
+	high 				float 		UN 
+	low 				float 		UN 
+	close 				float 		UN 
+	prev_close 			float 		UN 
+	volume 				int(10) 	UN 
+	number_of_trades 		int(10) 	UN 
+	net_turn_over 			float 		UN 
+	face_value 			float 		UN
+
+Table: tab_nse_stock_price
+
+Columns:
+	isin 				varchar(30) 	PK 
+	stock_date 			date 		PK 
+	open 				float 		UN 
+	high 				float 		UN 
+	low 				float 		UN 
+	close 				float 		UN 
+	prev_close 			float 		UN 
+	volume 				int(10) 	UN 
+	number_of_trades 		int(10) 	UN 
+	net_turn_over 			float 		
+ UN 
+	face_value 			float 		UN
+
+Table: tab_stock_info
+
+Columns:
+	isin 				varchar(30) 	PK 
+	mclink 				varchar(200) 
+	bse_symbol 			varchar(30) 
+	nse_symbol 			varchar(30) 
+	company_name 			varchar(50) 
+	sector_name 			varchar(75) 
+	ipo 				date 
+	face_value 			double 
+	face_value_update_date 		date 
+	market_cap 			double 
+	bse_sc_group 			varchar(3) 
+	nse_equity_series 		varchar(3)
+
+---------------------------------------
+
+outline
+
+ - Obtain the date from the user
+ - that date is the "fromDate" and today's date is the "toDate"
+ - if the user input an invalid date, the "fromDate: and "toDate" are today' date.
+ - download the BhavCopies from BSE and NSE
+ - from the BHavCopy's "ISIN", obtain the faceVlaue from "tab_stock_info" and store that faceValue in "tab_bse_stock_price"
+and "tab_nse_stock_price" tables.
+ - If BhavCopy's ISIN is not found in the "tab_stock_info" table, then write that ISIN in the error log and get the StockInfo data for that ISIN manually from the MC.

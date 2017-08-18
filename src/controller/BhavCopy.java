@@ -12,7 +12,7 @@ import constant.BCStrLtrConstant;
 import constant.BCStrProcConstant;
 import logger.LoggerUtil;
 import logger.LoggerWritingUtil;
-import service.BCService;
+import service.Service;
 import utils.BCProcessTimeUtil;
 
 
@@ -60,13 +60,19 @@ public class BhavCopy {
 	 * Execute.
 	 *
 	 * @return true, if successful
-	 * @throws SQLException the SQL exception
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public boolean execute() throws SQLException, IOException {
+	public boolean execute() throws Exception {
 		
-		BCService serviceObj = new BCService();
-		serviceObj.execute();
+		Service serviceObj = null;
+		
+		try{
+			 serviceObj = new Service();
+			 serviceObj.execute();
+			
+		}finally{
+			serviceObj.closeDBConnection();
+		}
 		return true;
 	}
 }

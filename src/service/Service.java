@@ -1,5 +1,7 @@
 package service;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,17 +11,26 @@ import constant.BCNumConstant;
 import controller.BhavCopy;
 import logger.LoggerWritingUtil;
 
-public class BCService {
+public class Service {
 	
 	public static Scanner reader = new Scanner(System.in);  // Reading from System.in
 	
-	private BCBSEService bseServiceObj = new BCBSEService();
-	private BCNSEService nseServiceObj = new BCNSEService();
+	private BCExchangeService exchServiceObj = null;
 	
 	
-	private String strClassName = BhavCopy.class.getSimpleName();
+	private String strClassName = Service.class.getSimpleName();
+	
+	public Service() throws ClassNotFoundException, SQLException{
+		exchServiceObj = new BCExchangeService();
+	}
+	
+	public boolean closeDBConnection(){
+		
+		exchServiceObj.closeDBConnection();
+		return true;
+	}
 
-	public boolean execute() {
+	public boolean execute() throws Exception {
 		
 		String strMethodName = Thread.currentThread().getStackTrace()[BCNumConstant.INT_ONE].getMethodName();
 
@@ -27,83 +38,31 @@ public class BCService {
 		
 		try{
 			// obtain the date of the bhavcopy of both BSE and NSE
-			obtainDate();
+			exchServiceObj.obtainDate();
+			
+			// delete the unwanted data in the download paths
+			exchServiceObj.deleteUnWantedFiles();
 			
 			// download bhavcopy
-			downloadBC();
+			exchServiceObj.downloadBC();
+			
+			// get the faceValue of the stocks from "tab_stock_info"
+			exchServiceObj.obtainSIDate();
 			
 			// after downloading, extract data from the bhavcopy
-			readBC();
+			exchServiceObj.readBC();
 			
 			// store the bhavcopy data into the database
-			saveBCData();
+			exchServiceObj.saveBCData();
 			
 			// after saving the data into the database, take the backup of the database
-			backupDBData();
+			// backupDBData();
 
 			LoggerWritingUtil.writeLoggerInfo(false, strMethodName, strClassName);
 			
 		} finally{
 			reader.close();
 		}
-
 		return true;
 	}
-	
-	private boolean obtainDate() {
-		
-		// this sets the bhavcopy dates for both BSE and NSE
-		bseServiceObj.obtainDate();
-		
-		return true;
-	}
-
-	private boolean downloadBC() {
-		
-		String strMethodName = Thread.currentThread().getStackTrace()[BCNumConstant.INT_ONE].getMethodName();
-
-		LoggerWritingUtil.writeLoggerInfo(true, strMethodName, strClassName);
-		
-		// once the date has been obtained, fromDate is always set and 
-		// check whether the toDate is not null
-		bseServiceObj.downloadBC();
-		nseServiceObj.downloadBC();
-		
-		LoggerWritingUtil.writeLoggerInfo(false, strMethodName, strClassName);
-		return true;
-	}
-
-	private boolean readBC() {
-		
-		String strMethodName = Thread.currentThread().getStackTrace()[BCNumConstant.INT_ONE].getMethodName();
-
-		LoggerWritingUtil.writeLoggerInfo(true, strMethodName, strClassName);
-		
-		
-		LoggerWritingUtil.writeLoggerInfo(false, strMethodName, strClassName);
-		return true;
-	}
-
-	private boolean saveBCData() {
-		
-		String strMethodName = Thread.currentThread().getStackTrace()[BCNumConstant.INT_ONE].getMethodName();
-
-		LoggerWritingUtil.writeLoggerInfo(true, strMethodName, strClassName);
-		
-		
-		LoggerWritingUtil.writeLoggerInfo(false, strMethodName, strClassName);
-		return true;
-	}
-
-	private boolean backupDBData() {
-		String strMethodName = Thread.currentThread().getStackTrace()[BCNumConstant.INT_ONE].getMethodName();
-
-		LoggerWritingUtil.writeLoggerInfo(true, strMethodName, strClassName);
-		
-		
-		LoggerWritingUtil.writeLoggerInfo(false, strMethodName, strClassName);
-		
-		return true;
-	}
-
 }
